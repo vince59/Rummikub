@@ -8,7 +8,7 @@ char color[4] = {'W', 'O', 'B', 'R'};
 t_tile bag[106];
 t_tile players[4][106];
 int bag_n = 106;
-int rack_n[4]={0,0,0,0};
+t_rack_info rack[4];
 
 void debug_game(int nb_players)
 {
@@ -99,35 +99,37 @@ void init_racks(int nb_players)
             players[i][j].number = -1;
             players[i][j].color = 'X';
         }
+        rack[i].tile_number=0;
+        rack[i].score=0;
     }
 }
 
-int pick(int *number, char* color)
+int pick(int *number, char *color)
 {
-    *number=-1;
+    *number = -1;
     int j = rand() % (bag_n);
-    int k=0;
-    for (int i=0; i<106; i++)
+    int k = 0;
+    for (int i = 0; i < 106; i++)
     {
-        if (bag[i].number>-1)
+        if (bag[i].number > -1)
         {
-            if (k==j) 
+            if (k == j)
             {
-                *number=bag[i].number;
-                *color=bag[i].color;
-                bag[i].number=-1;
-                bag[i].color='X';
+                *number = bag[i].number;
+                *color = bag[i].color;
+                bag[i].number = -1;
+                bag[i].color = 'X';
                 break;
             }
             else
                 k++;
         }
     }
-    if (*number==-1) 
+    if (*number == -1)
     {
         return 0;
     }
-        
+
     else
         bag_n--;
     return 1;
@@ -135,11 +137,12 @@ int pick(int *number, char* color)
 
 void fill_rack(int player)
 {
-    int max=14; // number of tile in a rack at the begining of the game
-    for (int i=0; i<max; i++) 
+    int max = 14; // number of tile in a rack at the begining of the game
+    for (int i = 0; i < max; i++)
     {
-        pick(&players[player][i].number,&players[player][i].color);
+        pick(&players[player][i].number, &players[player][i].color);
     }
+    rack[player].tile_number=max;
 }
 
 void init_game(int nb_players)
@@ -147,13 +150,28 @@ void init_game(int nb_players)
     fill_bag();
     init_racks(nb_players);
     srand(time(NULL));
-    for (int player=0; player<nb_players; player++)
+    for (int player = 0; player < nb_players; player++)
         fill_rack(player);
     print_game(nb_players);
+}
+
+void get_rack_info(int player, t_rack_info *rack)
+{
+    
 }
 
 void start_game(int nb_players)
 {
     printf("Game started !\n");
     init_game(nb_players);
+    for (;;)
+    {
+        for (int i=0; i < nb_players; i++)
+        {
+            get_rack_info(i,&rack[i]);
+            break;
+        }
+        break;
+    }
+    printf("End of game\n");
 }
